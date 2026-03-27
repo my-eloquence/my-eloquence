@@ -1,22 +1,23 @@
+import { saveSession, updateNav } from './auth.js'
+
 const transcriptDiv = document.getElementById("transcript");
 const feedbackDiv = document.getElementById("feedback");
- 
+
 const recognition = new webkitSpeechRecognition();
 recognition.continuous = true;
- 
+
 let finalText = "";
 let timerInterval = null;
 let seconds = 0;
- 
+let fillerCount = 0;
+
 const BACKEND_URL = "https://speech-ai-website-1.onrender.com";
- 
-// Stop speech on exit
+
 window.addEventListener("beforeunload", () => window.speechSynthesis.cancel());
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) window.speechSynthesis.cancel();
 });
- 
-// 🎤 Capture speech
+
 recognition.onresult = function(event) {
   finalText = "";
   for (let i = 0; i < event.results.length; i++) {
@@ -24,44 +25,45 @@ recognition.onresult = function(event) {
   }
   transcriptDiv.innerText = finalText;
 };
- 
-// ▶ Start recording
+
 document.getElementById("startBtn").onclick = () => {
   finalText = "";
   transcriptDiv.innerText = "";
   feedbackDiv.innerText = "";
   document.getElementById("fillerResult").style.display = "none";
   seconds = 0;
+  fillerCount = 0;
   updateTimer();
-  timerInterval = setInterval(() => {
-    seconds++;
-    updateTimer();
-  }, 1000);
+  timerInterval = setInterval(() => { seconds++; updateTimer(); }, 1000);
+  document.getElementById('recordStatus').textContent = '🔴 Recording...';
+  document.getElementById('recordStatus').style.color = '#ef4444';
+  document.getElementById('stopBtn').style.display = 'inline-flex';
+  document.getElementById('startBtn').style.display = 'none';
   recognition.start();
 };
- 
-// ⏹ Stop recording
+
 document.getElementById("stopBtn").onclick = () => {
   recognition.stop();
   clearInterval(timerInterval);
-  showFillerCount(finalText);
+  document.getElementById('recordStatus').textContent = '⏳ Analyzing...';
+  document.getElementById('recordStatus').style.color = '#f59e0b';
+  document.getElementById('stopBtn').style.display = 'none';
+  document.getElementById('startBtn').style.display = 'inline-flex';
+  fillerCount = showFillerCount(finalText);
   getAIFeedback(finalText);
 };
- 
-// ⏱ Timer display
+
 function updateTimer() {
   const m = String(Math.floor(seconds / 60)).padStart(2, '0');
   const s = String(seconds % 60).padStart(2, '0');
   document.getElementById("timerDisplay").innerText = `⏱ ${m}:${s}`;
 }
- 
-// 🔢 Filler word counter
+
 function showFillerCount(text) {
   const fillers = ["um", "uh", "like", "you know", "basically", "literally", "actually", "so", "right"];
   const lower = text.toLowerCase();
   let total = 0;
   let breakdown = [];
- 
   fillers.forEach(f => {
     const regex = new RegExp(`\\b${f}\\b`, 'gi');
     const matches = lower.match(regex);
@@ -70,7 +72,6 @@ function showFillerCount(text) {
       breakdown.push(`"${f}" × ${matches.length}`);
     }
   });
- 
   const box = document.getElementById("fillerResult");
   box.style.display = "block";
   if (total === 0) {
@@ -82,47 +83,25 @@ function showFillerCount(text) {
     box.style.background = "rgba(239,68,68,0.08)";
     box.style.borderColor = "#ef4444";
   }
+  return total;
 }
- 
-// 🔊 Speak feedback — warm, friendly voice
+
 function speakFeedback(text) {
   const speech = new SpeechSynthesisUtterance(text);
   speech.lang = "en-IN";
-  speech.pitch = 1.25;   // slightly higher = warmer, friendlier feel
-  speech.rate = 0.88;    // a touch slower = relaxed, not rushed
+  speech.pitch = 1.1;
+  speech.rate = 0.95;
   speech.volume = 1;
- 
-  // Pick the friendliest available voice
-  const voices = window.speechSynthesis.getVoices();
-  const preferred = voices.find(v =>
-    v.lang.startsWith("en") && (v.name.includes("Female") || v.name.includes("Google") || v.name.includes("Samantha"))
-  );
-  if (preferred) speech.voice = preferred;
- 
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(speech);
 }
- 
-// 🧠 Send to AI
+
 async function getAIFeedback(text) {
   if (!text || text.trim() === "") {
-    feedbackDiv.innerText = "Hmm, I didn't catch anything! Try speaking a bit louder. 😊";
+    feedbackDiv.innerText = "No speech detected.";
     return;
   }
- 
-  // Friendly loading messages — cycles every 2s
-  const loadingMessages = [
-    "Listening back to what you said... 🎧",
-    "Thinking about your speech... 🤔",
-    "Almost there, putting together some thoughts! ✨",
-  ];
-  let msgIndex = 0;
-  feedbackDiv.innerText = loadingMessages[0];
-  const loadingInterval = setInterval(() => {
-    msgIndex = (msgIndex + 1) % loadingMessages.length;
-    feedbackDiv.innerText = loadingMessages[msgIndex];
-  }, 2000);
- 
+  feedbackDiv.innerText = "Analyzing with AI...";
   try {
     const response = await fetch(`${BACKEND_URL}/ai`, {
       method: "POST",
@@ -130,13 +109,69 @@ async function getAIFeedback(text) {
       body: JSON.stringify({ text })
     });
     const data = await response.json();
-    clearInterval(loadingInterval);
     feedbackDiv.innerText = data.reply;
     speakFeedback(data.reply);
+
+    // Save session to Supabase
+    const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+    const s = String(seconds % 60).padStart(2, '0');
+    await saveSession(text, data.reply, `${m}:${s}`, fillerCount);
+
   } catch (error) {
-    clearInterval(loadingInterval);
-    feedbackDiv.innerText = "Oops! Couldn't reach the server right now. Check if it's running! 🙈";
+    feedbackDiv.innerText = "Backend not reachable. Is the server running?";
     console.error(error);
   }
 }
- 
+
+// Init nav
+updateNav();
+
+// Topic prompts
+const topics = [
+  "Describe your biggest achievement in 2 minutes.",
+  "Talk about a person who inspired you the most.",
+  "What would you do if you were president for a day?",
+  "Describe your dream job and why you want it.",
+  "Talk about a challenge you overcame recently.",
+  "What is the most important skill for success?",
+  "Describe a place you would love to visit and why.",
+  "What does success mean to you?",
+  "Talk about a book or movie that changed your perspective.",
+  "Why is public speaking important in daily life?",
+  "Describe your perfect day from morning to night.",
+  "What advice would you give your younger self?",
+  "Talk about a hobby you are passionate about.",
+  "What is the biggest problem in the world today?",
+  "Describe a time you had to make a difficult decision."
+];
+
+window.newTopic = function() {
+  const t = topics[Math.floor(Math.random() * topics.length)];
+  document.getElementById('topicText').textContent = t;
+}
+newTopic();
+
+// Dark mode
+window.toggleDark = function() {
+  document.body.classList.toggle('dark');
+  const btn = document.getElementById('darkToggle');
+  btn.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+  localStorage.setItem('dark', document.body.classList.contains('dark'));
+}
+if (localStorage.getItem('dark') === 'true') {
+  document.body.classList.add('dark');
+  document.getElementById('darkToggle').textContent = '☀️';
+}
+
+// Particles
+const container = document.getElementById('particles');
+for (let i = 0; i < 18; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.left = Math.random() * 100 + 'vw';
+  p.style.animationDelay = Math.random() * 8 + 's';
+  p.style.animationDuration = (6 + Math.random() * 8) + 's';
+  p.style.width = p.style.height = (4 + Math.random() * 6) + 'px';
+  p.style.opacity = 0.15 + Math.random() * 0.25;
+  container.appendChild(p);
+}
