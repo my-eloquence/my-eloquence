@@ -516,3 +516,197 @@ body.dark .popup-textarea { background: rgba(22,22,31,0.8); border-color: rgba(1
 .popup-success .ps-icon { font-size: 3rem; margin-bottom: 12px; }
 .popup-success p { color: var(--text-muted); font-size: 0.95rem; }
 }
+/* ═══════════════════════════════════════════════════════════
+   HAMBURGER / MOBILE NAV  —  paste this block into style.css
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Hamburger button (hidden on desktop) ─────────────────── */
+.burger-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 42px;
+  height: 42px;
+  background: rgba(255, 75, 110, 0.07);
+  border: 1.5px solid rgba(255, 75, 110, 0.18);
+  border-radius: 12px;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+  flex-shrink: 0;
+}
+
+.burger-btn:hover {
+  background: rgba(255, 75, 110, 0.14);
+  border-color: rgba(255, 75, 110, 0.35);
+  transform: scale(1.04);
+}
+
+body.dark .burger-btn {
+  background: rgba(124, 131, 255, 0.08);
+  border-color: rgba(124, 131, 255, 0.22);
+}
+
+body.dark .burger-btn:hover {
+  background: rgba(124, 131, 255, 0.16);
+  border-color: rgba(124, 131, 255, 0.4);
+}
+
+/* ── Three lines ──────────────────────────────────────────── */
+.burger-line {
+  display: block;
+  width: 20px;
+  height: 2.5px;
+  background: var(--primary, #ff4b6e);
+  border-radius: 99px;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity   0.2s ease,
+              width     0.2s ease;
+  transform-origin: center;
+}
+
+body.dark .burger-line {
+  background: #7c83ff;
+}
+
+/* Animate to × when open */
+.burger-btn.active .burger-line:nth-child(1) {
+  transform: translateY(7.5px) rotate(45deg);
+}
+.burger-btn.active .burger-line:nth-child(2) {
+  opacity: 0;
+  width: 0;
+}
+.burger-btn.active .burger-line:nth-child(3) {
+  transform: translateY(-7.5px) rotate(-45deg);
+}
+
+/* ── Full-screen overlay backdrop ────────────────────────── */
+.nav-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 20, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 998;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.nav-overlay.visible {
+  display: block;
+  opacity: 1;
+}
+
+/* ── Mobile breakpoint ───────────────────────────────────── */
+@media (max-width: 768px) {
+
+  /* Show the hamburger */
+  .burger-btn {
+    display: flex;
+  }
+
+  /* Make nav a flex row: logo on left, burger on right */
+  nav {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+  }
+
+  /* Hide the link list by default; slide in from top */
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: min(280px, 80vw);
+    height: 100dvh;
+    padding: 80px 24px 40px;
+    overflow-y: auto;
+
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-left: 1.5px solid rgba(255, 75, 110, 0.12);
+    box-shadow: -12px 0 48px rgba(255, 75, 110, 0.08);
+
+    z-index: 999;
+
+    transform: translateX(100%);
+    transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  body.dark .nav-links {
+    background: rgba(16, 16, 28, 0.97);
+    border-left-color: rgba(124, 131, 255, 0.14);
+    box-shadow: -12px 0 48px rgba(124, 131, 255, 0.08);
+  }
+
+  /* Slide in */
+  .nav-links.open {
+    transform: translateX(0);
+  }
+
+  /* Individual links in the drawer */
+  .nav-links a {
+    width: 100%;
+    padding: 13px 16px;
+    border-radius: 14px;
+    font-size: 0.97rem;
+    font-weight: 700;
+    color: var(--text, #1a1a2e);
+    text-decoration: none;
+    transition: background 0.18s ease, color 0.18s ease, transform 0.15s ease;
+  }
+
+  .nav-links a:hover {
+    background: rgba(255, 75, 110, 0.08);
+    color: #ff4b6e;
+    transform: translateX(4px);
+  }
+
+  .nav-links a.active {
+    background: rgba(255, 75, 110, 0.1);
+    color: #ff4b6e;
+  }
+
+  body.dark .nav-links a {
+    color: #f0f0ff;
+  }
+  body.dark .nav-links a:hover,
+  body.dark .nav-links a.active {
+    background: rgba(124, 131, 255, 0.12);
+    color: #7c83ff;
+  }
+
+  /* Dark-toggle button sits at the bottom of the drawer */
+  .nav-links .dark-toggle {
+    margin-top: auto;
+    width: 100%;
+    text-align: left;
+    padding: 13px 16px;
+    border-radius: 14px;
+    background: rgba(255, 75, 110, 0.05);
+    border: 1.5px solid rgba(255, 75, 110, 0.14);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.18s ease;
+  }
+
+  body.dark .nav-links .dark-toggle {
+    background: rgba(124, 131, 255, 0.07);
+    border-color: rgba(124, 131, 255, 0.18);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   END HAMBURGER / MOBILE NAV
+   ═══════════════════════════════════════════════════════════ */
