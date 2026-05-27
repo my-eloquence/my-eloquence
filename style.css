@@ -28,6 +28,9 @@ body.dark {
 /* ===== RESET ===== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ===== FIX: prevent horizontal scroll when drawer is off-screen ===== */
+html { overflow-x: hidden; }
+
 /* ===== BODY ===== */
 body {
   font-family: 'Outfit', sans-serif;
@@ -84,7 +87,7 @@ body.dark .orb3 { background: radial-gradient(circle, rgba(92,99,224,0.2), trans
   padding: 30px 0 60px;
 }
 
-/* ===== NAV ===== */
+/* ===== NAV — desktop ===== */
 nav {
   display: flex;
   justify-content: space-between;
@@ -97,6 +100,8 @@ nav {
   border: 1.5px solid var(--border);
   box-shadow: 0 4px 24px rgba(255,75,110,0.08);
   transition: all 0.3s ease;
+  position: relative;
+  z-index: 100;
 }
 
 body.dark nav {
@@ -113,6 +118,7 @@ body.dark nav {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: -0.3px;
+  flex-shrink: 0;
 }
 
 body.dark .logo {
@@ -121,6 +127,7 @@ body.dark .logo {
   background-clip: text;
 }
 
+/* Desktop: nav-links is a horizontal flex row */
 .nav-links { display: flex; gap: 4px; align-items: center; }
 
 nav a {
@@ -218,12 +225,8 @@ body.dark .highlight {
 }
 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(255,75,110,0.4); }
 
-body.dark .btn-primary {
-  box-shadow: 0 8px 24px rgba(124,131,255,0.3);
-}
-body.dark .btn-primary:hover {
-  box-shadow: 0 14px 32px rgba(124,131,255,0.4);
-}
+body.dark .btn-primary { box-shadow: 0 8px 24px rgba(124,131,255,0.3); }
+body.dark .btn-primary:hover { box-shadow: 0 14px 32px rgba(124,131,255,0.4); }
 
 .btn-secondary {
   display: inline-flex; align-items: center; gap: 8px;
@@ -239,9 +242,7 @@ body.dark .btn-secondary {
   background: rgba(124,131,255,0.08);
   border-color: rgba(124,131,255,0.2);
 }
-body.dark .btn-secondary:hover {
-  background: rgba(124,131,255,0.15);
-}
+body.dark .btn-secondary:hover { background: rgba(124,131,255,0.15); }
 
 .btn-stop {
   display: inline-flex; align-items: center; gap: 8px;
@@ -322,9 +323,7 @@ body.dark .card:hover { box-shadow: 0 10px 36px rgba(124,131,255,0.09); }
   white-space: pre-wrap;
 }
 
-body.dark .box {
-  background: rgba(13,13,20,0.8);
-}
+body.dark .box { background: rgba(13,13,20,0.8); }
 
 /* ===== TIMER ===== */
 .timer-display {
@@ -366,7 +365,7 @@ body.dark .topic-text {
   animation: fadeUp 0.4s ease both;
 }
 
-/* ===== DARK TOGGLE ===== */
+/* ===== DARK TOGGLE (desktop) ===== */
 .dark-toggle {
   background: rgba(255,75,110,0.07);
   border: 1.5px solid rgba(255,75,110,0.15);
@@ -384,38 +383,8 @@ body.dark .dark-toggle {
   border-color: rgba(124,131,255,0.2);
 }
 
-/* ===== MOBILE ===== */
-@media (max-width: 600px) {
-  .container { width: 95%; padding: 20px 0 40px; }
-
-  nav {
-    padding: 10px 14px;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .logo { font-size: 18px; }
-
-  .nav-links {
-    width: 100%;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 4px;
-  }
-
-  nav a { padding: 6px 8px; font-size: 12px; }
-  .dark-toggle { padding: 5px 10px; font-size: 14px; }
-  h1 { font-size: 1.9rem; letter-spacing: -0.5px; }
-  .subtitle { font-size: 0.93rem; }
-  .features { grid-template-columns: 1fr; gap: 12px; }
-  .feature-card { padding: 22px 16px; }
-  .btn-primary, .btn-secondary, .btn-stop { width: 100%; justify-content: center; padding: 13px 20px; }
-  .btn-row, .cta-group { flex-direction: column; align-items: center; }
-  .card { padding: 18px; }
-  .record-card { padding: 24px 16px; }
-  .timer-display { font-size: 1.8rem; }
-  /* ===== FEEDBACK BUTTON ===== */
+/* ===== FEEDBACK FAB ===== */
+/* FIX: was incorrectly nested inside @media (max-width:600px) — moved to global scope */
 .feedback-fab {
   position: fixed;
   bottom: 24px;
@@ -440,6 +409,7 @@ body.dark .dark-toggle {
 body.dark .feedback-fab { box-shadow: 0 8px 24px rgba(124,131,255,0.35); }
 
 /* ===== FEEDBACK POPUP ===== */
+/* FIX: was incorrectly nested inside @media (max-width:600px) — moved to global scope */
 .feedback-overlay {
   position: fixed; inset: 0; z-index: 9997;
   background: rgba(0,0,0,0.4);
@@ -515,12 +485,10 @@ body.dark .popup-textarea { background: rgba(22,22,31,0.8); border-color: rgba(1
 .popup-success { text-align: center; padding: 20px 0; display: none; animation: fadeUp 0.4s ease both; }
 .popup-success .ps-icon { font-size: 3rem; margin-bottom: 12px; }
 .popup-success p { color: var(--text-muted); font-size: 0.95rem; }
-}
-/* ═══════════════════════════════════════════════════════════
-   HAMBURGER / MOBILE NAV  —  paste this block into style.css
-   ═══════════════════════════════════════════════════════════ */
 
-/* ── Hamburger button (hidden on desktop) ─────────────────── */
+/* =====================================================
+   HAMBURGER BUTTON — hidden on desktop
+   ===================================================== */
 .burger-btn {
   display: none;
   flex-direction: column;
@@ -534,8 +502,8 @@ body.dark .popup-textarea { background: rgba(22,22,31,0.8); border-color: rgba(1
   border-radius: 12px;
   cursor: pointer;
   padding: 0;
-  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
   flex-shrink: 0;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
 }
 
 .burger-btn:hover {
@@ -548,42 +516,33 @@ body.dark .burger-btn {
   background: rgba(124, 131, 255, 0.08);
   border-color: rgba(124, 131, 255, 0.22);
 }
-
 body.dark .burger-btn:hover {
   background: rgba(124, 131, 255, 0.16);
   border-color: rgba(124, 131, 255, 0.4);
 }
 
-/* ── Three lines ──────────────────────────────────────────── */
+/* Three lines */
 .burger-line {
   display: block;
   width: 20px;
   height: 2.5px;
-  background: var(--primary, #ff4b6e);
+  background: var(--primary);
   border-radius: 99px;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               opacity   0.2s ease,
               width     0.2s ease;
   transform-origin: center;
 }
-
-body.dark .burger-line {
-  background: #7c83ff;
-}
+body.dark .burger-line { background: #7c83ff; }
 
 /* Animate to × when open */
-.burger-btn.active .burger-line:nth-child(1) {
-  transform: translateY(7.5px) rotate(45deg);
-}
-.burger-btn.active .burger-line:nth-child(2) {
-  opacity: 0;
-  width: 0;
-}
-.burger-btn.active .burger-line:nth-child(3) {
-  transform: translateY(-7.5px) rotate(-45deg);
-}
+.burger-btn.active .burger-line:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+.burger-btn.active .burger-line:nth-child(2) { opacity: 0; width: 0; }
+.burger-btn.active .burger-line:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
 
-/* ── Full-screen overlay backdrop ────────────────────────── */
+/* =====================================================
+   OVERLAY BACKDROP
+   ===================================================== */
 .nav-overlay {
   display: none;
   position: fixed;
@@ -600,97 +559,107 @@ body.dark .burger-line {
   opacity: 1;
 }
 
-/* ── Mobile breakpoint ───────────────────────────────────── */
+/* =====================================================
+   MOBILE — single unified breakpoint (replaces the old
+   conflicting @media (max-width:600px) block)
+   ===================================================== */
 @media (max-width: 768px) {
 
-  /* Show the hamburger */
-  .burger-btn {
-    display: flex;
-  }
+  /* Container */
+  .container { width: 95%; padding: 20px 0 40px; }
 
-  /* Make nav a flex row: logo on left, burger on right */
+  /* Nav bar: logo left, burger right — no wrapping */
   nav {
-    position: relative;
+    padding: 12px 16px;
+    margin-bottom: 28px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: nowrap;
+    gap: 0;
   }
 
-  /* Hide the link list by default; slide in from top */
+  /* Show burger */
+  .burger-btn { display: flex; }
+
+  /* Drawer: fixed panel that slides in from the right.
+     KEY FIXES:
+       - position:fixed so it never widens the page
+       - transform:translateX(100%) hides it off-screen
+       - width: min(280px,80vw) so it never covers everything
+       - z-index:999 (above overlay at 998, below nothing) */
   .nav-links {
-    display: flex;
+    display: flex !important;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 4px;
 
     position: fixed;
     top: 0;
     right: 0;
+    bottom: 0;
     width: min(280px, 80vw);
-    height: 100dvh;
-    padding: 80px 24px 40px;
+    height: 100%;
+    padding: 80px 16px 40px;
     overflow-y: auto;
+    overflow-x: hidden;
 
-    background: rgba(255, 255, 255, 0.97);
+    background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     border-left: 1.5px solid rgba(255, 75, 110, 0.12);
-    box-shadow: -12px 0 48px rgba(255, 75, 110, 0.08);
+    box-shadow: -8px 0 40px rgba(255, 75, 110, 0.1);
 
     z-index: 999;
 
+    /* Start fully off-screen — no layout impact */
     transform: translateX(100%);
     transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
   }
 
   body.dark .nav-links {
-    background: rgba(16, 16, 28, 0.97);
+    background: rgba(16, 16, 28, 0.98);
     border-left-color: rgba(124, 131, 255, 0.14);
-    box-shadow: -12px 0 48px rgba(124, 131, 255, 0.08);
+    box-shadow: -8px 0 40px rgba(124, 131, 255, 0.08);
   }
 
-  /* Slide in */
-  .nav-links.open {
-    transform: translateX(0);
-  }
+  /* Slide in when JS adds .open */
+  .nav-links.open { transform: translateX(0); }
 
-  /* Individual links in the drawer */
+  /* Links inside drawer */
   .nav-links a {
+    display: block;
     width: 100%;
     padding: 13px 16px;
     border-radius: 14px;
     font-size: 0.97rem;
     font-weight: 700;
-    color: var(--text, #1a1a2e);
+    color: var(--text);
     text-decoration: none;
     transition: background 0.18s ease, color 0.18s ease, transform 0.15s ease;
   }
-
   .nav-links a:hover {
     background: rgba(255, 75, 110, 0.08);
     color: #ff4b6e;
     transform: translateX(4px);
   }
-
   .nav-links a.active {
     background: rgba(255, 75, 110, 0.1);
     color: #ff4b6e;
   }
-
-  body.dark .nav-links a {
-    color: #f0f0ff;
-  }
+  body.dark .nav-links a { color: #f0f0ff; }
   body.dark .nav-links a:hover,
   body.dark .nav-links a.active {
     background: rgba(124, 131, 255, 0.12);
     color: #7c83ff;
   }
 
-  /* Dark-toggle button sits at the bottom of the drawer */
+  /* Dark toggle at bottom of drawer */
   .nav-links .dark-toggle {
-    margin-top: auto;
+    display: block;
     width: 100%;
+    margin-top: 16px;
     text-align: left;
     padding: 13px 16px;
     border-radius: 14px;
@@ -700,13 +669,26 @@ body.dark .burger-line {
     cursor: pointer;
     transition: background 0.18s ease;
   }
-
   body.dark .nav-links .dark-toggle {
     background: rgba(124, 131, 255, 0.07);
     border-color: rgba(124, 131, 255, 0.18);
   }
+
+  /* General layout fixes */
+  .logo { font-size: 18px; }
+  h1 { font-size: 1.9rem; letter-spacing: -0.5px; }
+  .subtitle { font-size: 0.93rem; }
+  .features { grid-template-columns: 1fr; gap: 12px; }
+  .feature-card { padding: 22px 16px; }
+  .btn-primary, .btn-secondary, .btn-stop { width: 100%; justify-content: center; padding: 13px 20px; }
+  .btn-row, .cta-group { flex-direction: column; align-items: center; }
+  .card { padding: 18px; }
+  .record-card { padding: 24px 16px; }
+  .timer-display { font-size: 1.8rem; }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   END HAMBURGER / MOBILE NAV
-   ═══════════════════════════════════════════════════════════ */
+/* Extra small phones */
+@media (max-width: 380px) {
+  nav { padding: 10px 12px; }
+  .logo { font-size: 16px; }
+}
