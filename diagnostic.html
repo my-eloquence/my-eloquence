@@ -25,6 +25,54 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Diagnostic Test — My Eloquence">
   <meta name="twitter:description" content="25 questions to find your public speaking and English skill level.">
+
+  <style>
+    .quiz-wrap { animation: fadeUp 0.6s ease both; }
+    .progress-bar-bg { background: rgba(255,75,110,0.12); border-radius: 99px; height: 8px; margin-bottom: 28px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 99px; transition: width 0.4s ease; }
+    .q-number { font-size: 0.8rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .q-category { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 3px 12px; border-radius: 99px; margin-bottom: 14px; }
+    .cat-grammar { background: rgba(99,102,241,0.12); color: #6366f1; }
+    .cat-vocabulary { background: rgba(34,211,238,0.12); color: #0891b2; }
+    .cat-pronunciation { background: rgba(251,146,60,0.15); color: #ea580c; }
+    .cat-comprehension { background: rgba(34,197,94,0.12); color: #16a34a; }
+    .q-text { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 22px; line-height: 1.6; }
+    .options { display: flex; flex-direction: column; gap: 12px; }
+    .option { background: rgba(255,255,255,0.7); border: 2px solid var(--border); border-radius: 14px; padding: 14px 18px; font-family: 'Outfit', sans-serif; font-size: 0.97rem; font-weight: 600; color: var(--text); cursor: pointer; text-align: left; transition: all 0.2s ease; }
+    .option:hover { border-color: var(--primary); background: rgba(255,75,110,0.06); transform: translateX(4px); }
+    .option.correct { border-color: #22c55e; background: rgba(34,197,94,0.1); color: #15803d; }
+    .option.wrong { border-color: #ef4444; background: rgba(239,68,68,0.1); color: #dc2626; }
+    .option.disabled { pointer-events: none; }
+    .next-btn { display: none; margin-top: 20px; width: 100%; justify-content: center; }
+    .result-wrap { text-align: center; animation: fadeUp 0.7s ease both; }
+    .score-circle { width: 140px; height: 140px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent)); display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 24px; box-shadow: 0 12px 40px rgba(255,75,110,0.3); }
+    .score-num { font-family: 'Outfit', sans-serif; font-size: 2.8rem; font-weight: 800; color: white; line-height: 1; }
+    .score-label { font-size: 0.8rem; font-weight: 700; color: rgba(255,255,255,0.8); }
+    .level-badge { display: inline-block; font-size: 1.1rem; font-weight: 800; padding: 10px 28px; border-radius: 99px; margin-bottom: 20px; }
+    .level-beginner { background: rgba(239,68,68,0.12); color: #dc2626; border: 2px solid rgba(239,68,68,0.25); }
+    .level-intermediate { background: rgba(251,146,60,0.12); color: #ea580c; border: 2px solid rgba(251,146,60,0.25); }
+    .level-advanced { background: rgba(34,197,94,0.12); color: #16a34a; border: 2px solid rgba(34,197,94,0.25); }
+    .result-msg { font-size: 1rem; color: var(--text-muted); line-height: 1.7; max-width: 420px; margin: 0 auto 28px; }
+    .section-scores { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 24px 0; text-align: left; }
+    .section-score-item { background: rgba(255,255,255,0.7); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; }
+    .section-score-item .s-label { font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 6px; }
+    .section-score-item .s-val { font-size: 1.3rem; font-weight: 900; color: var(--primary); }
+    .result-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+    .set-badge { font-size: 0.75rem; color: var(--text-muted); text-align: right; margin-bottom: 8px; font-weight: 600; }
+    body.dark .option { background: rgba(22,22,31,0.8); color: #f0f0ff; border-color: rgba(124,131,255,0.2); }
+    body.dark .option:hover { background: rgba(124,131,255,0.1); }
+    body.dark .option.correct { background: rgba(34,197,94,0.15); color: #4ade80; }
+    body.dark .option.wrong { background: rgba(239,68,68,0.15); color: #f87171; }
+    body.dark .q-text { color: #f0f0ff; }
+    body.dark .section-score-item { background: rgba(22,22,31,0.8); border-color: rgba(124,131,255,0.2); }
+    body.dark .result-msg { color: #7070a0; }
+    body.dark .progress-bar-bg { background: rgba(124,131,255,0.15); }
+    @media (max-width: 600px) {
+      .section-scores { grid-template-columns: 1fr; }
+      .score-circle { width: 120px; height: 120px; }
+      .score-num { font-size: 2.2rem; }
+    }
+  </style>
 </head>
 <body>
 
@@ -247,7 +295,6 @@ for (let i = 0; i < 18; i++) {
 }
 
 loadQuestion();
-
 </script>
 <script src="nav.js"></script>
 <script type="module" src="login-widget.js"></script>
