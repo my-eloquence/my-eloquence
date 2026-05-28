@@ -90,8 +90,8 @@ if (!document.getElementById('loginWidgetStyles')) {
   style.textContent = `
     #loginWidget {
       position: fixed;
-      top: 16px;
-      left: 16px;
+      top: 14px;
+      right: 16px; left: auto;
       z-index: 9999;
     }
 
@@ -144,7 +144,7 @@ if (!document.getElementById('loginWidgetStyles')) {
       display: none;
       position: absolute;
       top: 52px;
-      left: 0;
+      right: 0; left: auto;
       width: 240px;
       background: rgba(255,255,255,0.97);
       backdrop-filter: blur(20px);

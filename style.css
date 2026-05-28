@@ -421,48 +421,9 @@ body.dark .hamburger { background: rgba(124,131,255,0.1); border-color: rgba(124
 
 /* ===== MOBILE ===== */
 @media (max-width: 768px) {
-  .hamburger { display: flex; }
-
-  nav {
-    position: relative;
-    padding: 10px 14px;
-    margin-bottom: 30px;
-    flex-wrap: nowrap;
-  }
-
+  .container { width: 95%; padding: 20px 0 40px; }
+  nav { padding: 10px 14px; margin-bottom: 24px; }
   .logo { font-size: 18px; }
-
-  /* Hide links by default; show as dropdown when .open */
-  .nav-links {
-    display: none;
-    position: absolute;
-    top: calc(100% + 10px);
-    left: 0;
-    right: 0;
-    background: rgba(255,255,255,0.98);
-    backdrop-filter: blur(20px);
-    border: 1.5px solid var(--border);
-    border-radius: 18px;
-    padding: 10px;
-    flex-direction: column;
-    gap: 2px;
-    box-shadow: 0 12px 40px rgba(255,75,110,0.12);
-    z-index: 999;
-  }
-  body.dark .nav-links {
-    background: rgba(22,22,31,0.98);
-    box-shadow: 0 12px 40px rgba(124,131,255,0.12);
-  }
-  .nav-links.open { display: flex; }
-
-  nav a {
-    padding: 11px 16px !important;
-    font-size: 15px !important;
-    border-radius: 12px;
-    width: 100%;
-    text-align: left;
-  }
-
   .dark-toggle { padding: 5px 10px; font-size: 14px; }
   h1 { font-size: 1.9rem; letter-spacing: -0.5px; }
   .subtitle { font-size: 0.93rem; }
