@@ -109,7 +109,7 @@
 <div class="container">
   <nav>
     <div class="logo">🎤 My Eloquence</div>
-    <div class="nav-links">
+    <div class="nav-links" id="navLinks">
       <a href="index.html">Home</a>
       <a href="diagnostic.html">Diagnostic</a>
       <a href="learn.html">Learn</a>
@@ -117,7 +117,12 @@
       <a href="history.html">History</a>
       <a href="twisters.html" class="active">Twisters</a>
       <a href="feedback.html">Feedback</a>
+    </div>
+    <div class="nav-right">
       <button class="dark-toggle" id="darkToggle" onclick="toggleDark()">🌙</button>
+      <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </nav>
 
@@ -309,15 +314,17 @@ function markPracticed(id) {
 }
 
 function toggleDark() {
-  document.body.classList.toggle('dark');
-  const btn = document.getElementById('darkToggle');
-  btn.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
-  localStorage.setItem('dark', document.body.classList.contains('dark'));
-}
+    document.body.classList.toggle('dark');
+    var isDark = document.body.classList.contains('dark');
+    var btn = document.getElementById('darkToggle');
+    if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+    localStorage.setItem('dark', isDark);
+  }
 if (localStorage.getItem('dark') === 'true') {
-  document.body.classList.add('dark');
-  document.getElementById('darkToggle').textContent = '☀️';
-}
+    document.body.classList.add('dark');
+    var btn = document.getElementById('darkToggle');
+    if (btn) btn.textContent = '☀️';
+  }
 
 const particleContainer = document.getElementById('particles');
 for (let i = 0; i < 18; i++) {
@@ -334,7 +341,6 @@ for (let i = 0; i < 18; i++) {
 loadStats();
 renderTwisters();
 </script>
-<script src="nav.js"></script>
 <script type="module" src="login-widget.js"></script>
 </body>
 </html>

@@ -3,28 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Eloquence — Practice Speech</title>
+  <title>My Eloquence — Practice</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-
-  <!-- SEO -->
-  <meta name="description" content="Practice your speech with AI feedback on My Eloquence. Record yourself speaking and get instant coaching on tone, grammar, filler words and delivery.">
-  <meta name="keywords" content="speech practice, AI feedback, public speaking coach, filler words, speech recording, improve delivery">
-  <meta name="author" content="My Eloquence">
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://my-eloquence.github.io/my-eloquence/exercise.html">
-
-  <!-- Open Graph -->
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Practice Speech — My Eloquence">
-  <meta property="og:description" content="Record your speech and get instant AI feedback on tone, grammar, filler words and delivery.">
-  <meta property="og:url" content="https://my-eloquence.github.io/my-eloquence/exercise.html">
-  <meta property="og:site_name" content="My Eloquence">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Practice Speech — My Eloquence">
-  <meta name="twitter:description" content="Record your speech and get instant AI feedback on tone, grammar and delivery.">
 </head>
 <body>
 
@@ -36,7 +17,7 @@
 <div class="container">
   <nav>
     <div class="logo">🎤 My Eloquence</div>
-    <div class="nav-links">
+    <div class="nav-links" id="navLinks">
       <a href="index.html">Home</a>
       <a href="diagnostic.html">Diagnostic</a>
       <a href="learn.html">Learn</a>
@@ -44,7 +25,12 @@
       <a href="history.html">History</a>
       <a href="twisters.html">Twisters</a>
       <a href="feedback.html">Feedback</a>
+    </div>
+    <div class="nav-right">
       <button class="dark-toggle" id="darkToggle" onclick="toggleDark()">🌙</button>
+      <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </nav>
 
@@ -86,13 +72,15 @@
   // Dark mode — must be plain script, not module
   function toggleDark() {
     document.body.classList.toggle('dark');
-    const btn = document.getElementById('darkToggle');
-    btn.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
-    localStorage.setItem('dark', document.body.classList.contains('dark'));
+    var isDark = document.body.classList.contains('dark');
+    var btn = document.getElementById('darkToggle');
+    if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+    localStorage.setItem('dark', isDark);
   }
   if (localStorage.getItem('dark') === 'true') {
     document.body.classList.add('dark');
-    document.getElementById('darkToggle').textContent = '☀️';
+    var btn = document.getElementById('darkToggle');
+    if (btn) btn.textContent = '☀️';
   }
 
   // Particles
@@ -270,7 +258,7 @@
     getAIFeedback(finalText);
   };
 </script>
-<script src="nav.js"></script>
+
 <script type="module" src="login-widget.js"></script>
 </body>
 </html>
