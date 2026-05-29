@@ -91,8 +91,21 @@ if (!document.getElementById('loginWidgetStyles')) {
     #loginWidget {
       position: fixed;
       top: 14px;
-      right: 16px; left: auto;
-      z-index: 9999;
+      right: 16px;
+      left: auto;
+      z-index: 10000;
+    }
+    /* On mobile, push it below the nav so it doesn't overlap burger */
+    @media (max-width: 768px) {
+      #loginWidget {
+        top: auto;
+        bottom: 20px;
+        right: 16px;
+      }
+      .lw-panel {
+        bottom: 52px !important;
+        top: auto !important;
+      }
     }
 
     .lw-login-btn {
