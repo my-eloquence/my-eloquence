@@ -6,6 +6,67 @@
   <title>My Eloquence — Practice</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+    .voice-selector {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+    .voice-selector label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+    .voice-selector select {
+      flex: 1;
+      min-width: 0;
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+    .voice-selector select:focus {
+      border-color: var(--primary);
+    }
+    body.dark .voice-selector select {
+      background: rgba(22,22,31,0.9);
+      border-color: rgba(124,131,255,0.2);
+      color: #f0f0ff;
+    }
+    .voice-test-btn {
+      background: rgba(255,75,110,0.08);
+      border: 1.5px solid rgba(255,75,110,0.2);
+      border-radius: 10px;
+      padding: 7px 14px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--primary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .voice-test-btn:hover {
+      background: rgba(255,75,110,0.15);
+    }
+    body.dark .voice-test-btn {
+      background: rgba(124,131,255,0.08);
+      border-color: rgba(124,131,255,0.2);
+      color: #7c83ff;
+    }
+  </style>
 </head>
 <body>
 
@@ -48,6 +109,15 @@
       <button id="startBtn" class="btn-primary"><span>▶ Start Recording</span></button>
       <button id="stopBtn" class="btn-stop" style="display:none;"><span>⏹ Stop</span></button>
     </div>
+
+    <!-- Voice Selector -->
+    <div class="voice-selector">
+      <label>🔊 Voice</label>
+      <select id="voiceSelect">
+        <option value="">Loading voices...</option>
+      </select>
+      <button class="voice-test-btn" onclick="testVoice()">▶ Test</button>
+    </div>
   </div>
 
   <div id="fillerResult" class="filler-box" style="display:none;"></div>
@@ -64,7 +134,7 @@
 </div>
 
 <script>
-  // Dark mode — must be plain script, not module
+  // Dark mode
   function toggleDark() {
     document.body.classList.toggle('dark');
     const btn = document.getElementById('darkToggle');
@@ -113,6 +183,112 @@
     document.getElementById('topicText').textContent = t;
   }
   newTopic();
+
+  // ── Voice Selector ──────────────────────────────────────
+  let allVoices = [];
+
+  // Priority voice preferences (name fragments, in order)
+  const PREFERRED_EN = [
+    'Google UK English Female',
+    'Google US English',
+    'Microsoft Aria',
+    'Samantha',
+    'Karen',
+    'Victoria',
+    'Google UK English Male',
+  ];
+
+  function populateVoices() {
+    allVoices = window.speechSynthesis.getVoices();
+    if (allVoices.length === 0) return;
+
+    const select = document.getElementById('voiceSelect');
+    select.innerHTML = '';
+
+    // Group: Tamil voices first, then English, then all others
+    const tamil   = allVoices.filter(v => v.lang.startsWith('ta'));
+    const english = allVoices.filter(v => v.lang.startsWith('en'));
+    const others  = allVoices.filter(v => !v.lang.startsWith('ta') && !v.lang.startsWith('en'));
+
+    const addGroup = (label, voices) => {
+      if (voices.length === 0) return;
+      const group = document.createElement('optgroup');
+      group.label = label;
+      voices.forEach((v, i) => {
+        const opt = document.createElement('option');
+        opt.value = v.name;
+        opt.textContent = `${v.name} (${v.lang})`;
+        group.appendChild(opt);
+      });
+      select.appendChild(group);
+    };
+
+    addGroup('🇮🇳 Tamil', tamil);
+    addGroup('🇬🇧🇺🇸 English', english);
+    addGroup('🌐 Other', others);
+
+    // Auto-select saved preference or best default
+    const saved = localStorage.getItem('preferredVoice');
+    if (saved && allVoices.find(v => v.name === saved)) {
+      select.value = saved;
+    } else {
+      // Pick best English voice as default
+      const best = PREFERRED_EN.reduce((found, pref) => {
+        return found || allVoices.find(v => v.name.includes(pref));
+      }, null);
+      if (best) select.value = best.name;
+    }
+  }
+
+  // Voices load async in Chrome
+  if (typeof speechSynthesis !== 'undefined') {
+    populateVoices();
+    window.speechSynthesis.onvoiceschanged = populateVoices;
+  }
+
+  // Save preference when user picks
+  document.getElementById('voiceSelect').addEventListener('change', function() {
+    localStorage.setItem('preferredVoice', this.value);
+  });
+
+  function getSelectedVoice() {
+    const name = document.getElementById('voiceSelect').value;
+    return allVoices.find(v => v.name === name) || null;
+  }
+
+  function testVoice() {
+    const voice = getSelectedVoice();
+    const sample = voice && voice.lang.startsWith('ta')
+      ? 'வணக்கம். இது உங்கள் AI பயிற்சியாளர்.'
+      : 'Hello! This is your AI speech coach. Great job practicing today!';
+    speakFeedback(sample);
+  }
+
+  function speakFeedback(text) {
+    window.speechSynthesis.cancel();
+
+    const doSpeak = () => {
+      const voice = getSelectedVoice();
+      const speech = new SpeechSynthesisUtterance(text);
+      if (voice) {
+        speech.voice = voice;
+        speech.lang = voice.lang;
+      } else {
+        speech.lang = 'en-US';
+      }
+      speech.pitch = 1.0;
+      speech.rate = 0.95;
+      speech.volume = 1;
+      window.speechSynthesis.speak(speech);
+    };
+
+    if (allVoices.length > 0) {
+      doSpeak();
+    } else {
+      window.speechSynthesis.onvoiceschanged = () => { populateVoices(); doSpeak(); };
+    }
+  }
+  // ────────────────────────────────────────────────────────
 
   // Recording logic
   const transcriptDiv = document.getElementById("transcript");
@@ -180,16 +356,6 @@
       box.style.color = "#dc2626";
     }
     return total;
-  }
-
-  function speakFeedback(text) {
-    const speech = new SpeechSynthesisUtterance(text);
-    speech.lang = "en-IN";
-    speech.pitch = 1.1;
-    speech.rate = 0.95;
-    speech.volume = 1;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(speech);
   }
 
   async function getAIFeedback(text) {
